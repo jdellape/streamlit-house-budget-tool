@@ -61,7 +61,7 @@ bonus_income_multiplier_list = [1 if expected_bonus_receive_date < ds else 0 for
 df_dict = {'months_out': months_out_list, 'current_savings': current_savings_list, 
         'expected_additional_savings': savings_per_month_list, 'tax_rebate': tax_rebate_list,
         'tax_rebate_multiplier': tax_rebate_multiplier_list, 'bonus_income': bonus_income_list, 
-        'bonus_income_multiplier':bonus_income_multiplier_list} 
+        'bonus_income_multiplier':bonus_income_multiplier_list, 'total_required_to_purchase':[total_required_to_purchase for i in months_out_list]} 
     
 df = pd.DataFrame(df_dict)
 
@@ -72,15 +72,14 @@ df['total_savings_available_for_transaction'] = df['current_savings'] + df['expe
 df['able_to_purchase'] = df['total_savings_available_for_transaction'] > total_required_to_purchase
     
 #Create a chart
-line_chart = alt.Chart(df).mark_line().encode(x="months_out", y="total_savings_available_for_transaction", color="able_to_purchase")
+line_chart = alt.Chart(df).mark_line().encode(x="months_out", y="total_savings_available_for_transaction")
 
-
-# yrule = (
-#     alt.Chart().mark_rule(strokeDash=[12, 6], size=2).encode(y=alt.datum(300000))
-# )
+yrule = (
+    alt.Chart(df).mark_rule(strokeDash=[12, 6], size=2, color='red').encode(y=alt.Y('total_required_to_purchase', axis=alt.Axis(title=None)))
+)
 
 #output chart and dataframe to screen
-st.altair_chart(line_chart, use_container_width=True)
+st.altair_chart(line_chart + yrule, use_container_width=True)
 st.write(df) 
 
 
